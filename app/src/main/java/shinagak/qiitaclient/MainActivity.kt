@@ -1,25 +1,38 @@
 package shinagak.qiitaclient
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.widget.ListView
 import shinagak.qiitaclient.model.Article
 import shinagak.qiitaclient.model.User
-import shinagak.qiitaclient.view.ArticleView
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        val articleView = ArticleView(applicationContext)
-        articleView.setArticle(
-            Article(id = "123",
-            title = "Kotlin入門",
-            url = "http://www.example.com/articles/123",
-            user = User(id = "456", name = "たろう", profileImageUrl = "")
-            )
+
+        val listAdapter = ArticleListAdapter(applicationContext)
+        listAdapter.articles = listOf(
+            dummyArticle("kotlin入門", "taro"),
+            dummyArticle("java入門", "jiro")
         )
 
-        setContentView(articleView)
+        val listView: ListView = findViewById(R.id.list_view) as ListView
+        listView.adapter = listAdapter
+        listView.setOnItemClickListener { adapterView, view, position, id ->
+            val article = listAdapter.articles[position]
+            ArticleActivity.intent(this, article).let { startActivity(it) }
+        }
     }
+
+    private fun dummyArticle(title: String, userName: String): Article =
+        Article(
+            id = "",
+            title = title,
+            url = "http://www.example.com/articles/123",
+            user = User(id = "", name = userName, profileImageUrl = "")
+        )
+
 }
